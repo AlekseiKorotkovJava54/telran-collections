@@ -33,7 +33,6 @@ public class TreeSetTest extends SortedSetTest {
 			actual[index++] = num;
 		}
 		assertArrayEquals(expected, actual);
-		treeSet.treeInversion();
 		assertTrue(treeSet.contains(100));
 	}
 	@Test

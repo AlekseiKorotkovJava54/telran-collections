@@ -291,7 +291,9 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	/**
 	 * conversion of tree so that iterating has been in the inversive order
 	 */
+	@SuppressWarnings("unchecked")
 	public void treeInversion() {
+		this.comp = (Comparator<T>)Comparator.naturalOrder().reversed();
 		treeInversion(root);
 	}
 	private void treeInversion(Node<T> tmpRoot) {
