@@ -10,7 +10,6 @@ import telran.util.HashSet;
 import telran.util.LinkedHashSet;
 
 public class LinkedHashSetTest extends SetTest {
-	
 @Override
 @BeforeEach
 void setUp() {

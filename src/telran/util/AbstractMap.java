@@ -1,17 +1,16 @@
 package telran.util;
 
 public abstract class AbstractMap<K, V> implements Map<K, V> {
-	
      protected Set<Entry<K, V>> set;
-     
      abstract protected Set<K> getEmptyKeySet();
-     
 	@Override
 	public V get(K key) {
 		Entry<K, V> pattern = new Entry<>(key, null);
 		Entry<K, V> entry = set.get(pattern);
 		V res = null;
-		if (entry != null) res = entry.getValue();
+		if (entry != null) {
+			res = entry.getValue();
+		}
 		return res;
 	}
 
@@ -20,21 +19,24 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 		Entry<K, V> pattern = new Entry<>(key, null);
 		Entry<K, V> entry = set.get(pattern);
 		V res = null;
-		if (entry != null) {
+		if (entry == null) {
+			set.add(new Entry<K, V>(key, value));
+		} else {
 			res = entry.getValue();
 			entry.setValue(value);
-		} else set.add(new Entry<>(key, null));
+		}
 		return res;
 	}
 
 	@Override
 	public V remove(K key) {
+		V res = null;
 		Entry<K, V> pattern = new Entry<>(key, null);
 		Entry<K, V> entry = set.get(pattern);
-		V res = null;
-		if (entry != null) {
+		if(entry != null) {
 			res = entry.getValue();
-			set.remove(pattern);
+			set.remove(entry);
+			
 		}
 		return res;
 	}
@@ -47,7 +49,8 @@ public abstract class AbstractMap<K, V> implements Map<K, V> {
 	}
 
 	@Override
-	public Set<Entry<K, V>> entrySet() {	
+	public Set<Entry<K, V>> entrySet() {
+		
 		return set;
 	}
 

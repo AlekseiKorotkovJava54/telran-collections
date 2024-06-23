@@ -2,7 +2,6 @@ package telran.util.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,27 +60,33 @@ public class TreeSetTest extends SortedSetTest {
 			treeSet.add(num);
 		}
 		balancedTreeTest(treeSet);
+		
 	}
-	
 	private void balancedTreeTest(TreeSet<Integer> treeSet) {
 		assertEquals(20, treeSet.height());
 		assertEquals((N_ELEMENTS + 1) / 2, treeSet.width());
 	}
-	
 	private void transformArray(int[] sortedArray) {
-		int [] sourceArray = Arrays.copyOf(sortedArray, sortedArray.length);
-		transformArray(sortedArray, sourceArray,0, 0, sortedArray.length-1);
+		int [] balanceOrderedArray = new int[sortedArray.length];
+		int [] indexRef = {0};
+		transformArray(balanceOrderedArray, sortedArray,
+				indexRef, 0, sortedArray.length - 1);
+		System.arraycopy(balanceOrderedArray, 0,
+				sortedArray, 0, N_ELEMENTS);
+		
 	}
-	
-	private void transformArray(int[] sortedArray, int[] sourceArray, int newIndex, int left, int right) {
-		if(left <= right && newIndex < sortedArray.length) {
-			int middle = (left + right) / 2;
-			sortedArray[newIndex] = sourceArray[middle];
-			transformArray(sortedArray, sourceArray, newIndex*2+1, left, middle - 1);
-			transformArray(sortedArray, sourceArray, newIndex*2+2, middle + 1, right);
+	private void transformArray(int[] balanceOrderedArray, int[] sortedArray,
+			int[] indexRef, int left, int right) {
+		if (left <= right) {
+			int indexRoot = (left + right) / 2;
+			int index = indexRef[0];
+			balanceOrderedArray[index] = sortedArray[indexRoot];
+			indexRef[0]++;
+			transformArray(balanceOrderedArray, sortedArray, indexRef, left, indexRoot - 1);
+			transformArray(balanceOrderedArray, sortedArray, indexRef, indexRoot + 1,
+					right);
 		}
 	}
-	
 	@Test
 	void balanceTreeTest() {
 		createBigRandomCollection(new Random());
@@ -91,6 +96,6 @@ public class TreeSetTest extends SortedSetTest {
 		for(Integer num: treeSet) {
 			index++;
 		}
-		assertEquals(treeSet.size(), index);
+		assertEquals(N_ELEMENTS, index);
 	}
 }

@@ -5,25 +5,45 @@ import java.util.Iterator;
 import telran.util.LinkedList.Node;
 
 public class LinkedHashSet<T> extends AbstractCollection<T> implements Set<T> {
-	
 	HashMap<T, Node<T>> map = new HashMap<>();
 	LinkedList<T> list = new LinkedList<>();
-	
+	private class LinkedHashSetIterator implements Iterator<T> {
+		Iterator<T> it = list.iterator();
+		T iterated;
+		@Override
+		public boolean hasNext() {
+			
+			return it.hasNext();
+		}
+
+		@Override
+		public T next() {
+			iterated = it.next();
+			return iterated;
+		}
+		@Override
+		public void remove() {
+			it.remove();
+			map.remove(iterated);
+			size--;
+		}
+		
+	}
 	@Override
 	public T get(T pattern) {
 		Node<T> node = map.get(pattern);
+		
 		return node == null ? null : node.data;
 	}
 
 	@Override
 	public boolean add(T obj) {
 		boolean res = false;
-		Node<T> addNode = new Node<>(obj);
-		Node<T> node = map.putIfAbsent(obj, addNode);
-		if(node == null) {
+		if(!contains(obj)) {
 			res = true;
-			list.addNode(size, addNode);
-			size++;
+			Node<T> node = new Node<T>(obj);
+			map.put(obj, node);
+			list.addNode(size++, node);
 		}
 		return res;
 	}
@@ -44,13 +64,14 @@ public class LinkedHashSet<T> extends AbstractCollection<T> implements Set<T> {
 
 	@Override
 	public boolean contains(T pattern) {
-		Node<T> node = map.get(pattern);
-		return node == null ? false : true;
+		
+		return map.get(pattern) != null;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return list.iterator();
+		
+		return new LinkedHashSetIterator();
 	}
 
 }

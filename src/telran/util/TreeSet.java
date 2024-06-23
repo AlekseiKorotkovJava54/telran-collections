@@ -44,6 +44,7 @@ private class TreeSetIterator implements Iterator<T> {
 	
 }
 private static final int DEFAULT_SPACES_PER_LEVEL = 2;
+private static final int SEPARATOR_LENGTH = 20;
 	Node<T> root;
 	private Comparator<T> comp;
 	private int spacesPerLevel = DEFAULT_SPACES_PER_LEVEL;
@@ -240,7 +241,8 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	 *  or null if there is no such element
 	 */
 	public T floor(T key) {
-		return findElement(key, true);
+		
+		return floorCeiling(key, true);
 	}
 	@Override
 	/**
@@ -249,25 +251,21 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	 *  or null if there is no such element
 	 */
 	public T ceiling(T key) {
-		return findElement(key, false);
+		
+		return floorCeiling(key, false);
 	}
-	private T findElement(T key, boolean isFloor) {
-		if(key == null) throw new NullPointerException();
+	private T floorCeiling(T key, boolean isFloor) {
 		T res = null;
-		int compRes;
-		Node<T> current = this.root;
-		while(current != null && res != key) {
-			if((compRes = comp.compare(key, current.data)) == 0) res = key;
-			else {
-				if((isFloor && compRes > 0) || (!isFloor && compRes < 0)) {
-					res = current.data;
-					current = isFloor ? current.right : current.left;
-				} else {
-					current = isFloor ? current.left : current.right;
-				}
+		int compRes = 0;
+		Node<T> current = root;
+		while (current != null && (compRes = comp.compare(key, current.data)) != 0) {
+			if ((compRes < 0 && !isFloor) || (compRes > 0 && isFloor)) {
+				res = current.data;
 			}
+			current = compRes < 0 ? current.left : current.right;
 		}
-		return res;
+		return current == null ? res : current.data;
+
 	}
 	/**
 	 * display tree in the following form:
@@ -278,36 +276,39 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	 *        100
 	 */
 	public void displayRootChildren() {
-		displayTree(root, 1);
+		System.out.printf("%s %s\n","ROOT->CHILDREN", "=".repeat(SEPARATOR_LENGTH));
+		displayRootChildren(root, 1);
 	}
-	private void displayTree(Node<T> tmpRoot, int level) {
-		if (tmpRoot != null) {
+	private void displayRootChildren(Node<T> tmpRoot, int level) {
+		if(tmpRoot != null) {
 			displayRoot(tmpRoot, level);
-			displayTree(tmpRoot.left, level + 1);
-			displayTree(tmpRoot.right, level + 1);
+			displayRootChildren(tmpRoot.left, level + 1);
+			displayRootChildren(tmpRoot.right, level + 1);
 		}
+		
 	}
 	/*****************************************/
 	/**
 	 * conversion of tree so that iterating has been in the inversive order
 	 */
-	
 	public void treeInversion() {
 		comp = comp.reversed();
 		treeInversion(root);
 	}
-	
 	private void treeInversion(Node<T> tmpRoot) {
-		Node<T> tmp;
 		if(tmpRoot != null) {
-			if(tmpRoot.left != null || tmpRoot.right != null) {
-				tmp = tmpRoot.left;
-				tmpRoot.left = tmpRoot.right;
-				tmpRoot.right =tmp;
-				treeInversion(tmpRoot.left);
-				treeInversion(tmpRoot.right);
-			}
+			swapLeftRight(tmpRoot);
+			treeInversion(tmpRoot.left);
+			treeInversion(tmpRoot.right);
+			
 		}
+		
+	}
+	private void swapLeftRight(Node<T> tmpRoot) {
+		Node<T> tmp = tmpRoot.left;
+		tmpRoot.left = tmpRoot.right;
+		tmpRoot.right = tmp;
+		
 	}
 	/**
 	 * displays tree in the following form
@@ -318,17 +319,17 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	 *   -20           
 	 */
 	public void displayTreeRotated() {
+		System.out.printf("%s %s\n","ROTATED on -90 degrees", "=".repeat(SEPARATOR_LENGTH));
 		displayTreeRotated(root, 1);
 	}
-	
 	private void displayTreeRotated(Node<T> tmpRoot, int level) {
 		if (tmpRoot != null) {
 			displayTreeRotated(tmpRoot.right, level + 1);
 			displayRoot(tmpRoot, level);
 			displayTreeRotated(tmpRoot.left, level + 1);
 		}
+		
 	}
-	
 	private void displayRoot(Node<T> tmpRoot, int level) {
 		System.out.printf("%s", " ".repeat(level * spacesPerLevel ));
 		System.out.println(tmpRoot.data);
@@ -342,7 +343,6 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 		
 		return width(root);
 	}
-	
 	private int width(Node<T> tmpRoot) {
 		int res = 0;
 		if(tmpRoot != null) {
@@ -360,9 +360,9 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 	 * @return number of the nodes of the longest line
 	 */
 	public int height() {
+		
 		return height(root);
 	}
-	
 	private int height(Node<T> tmpRoot) {
 		int res = 0;
 		if (tmpRoot != null) {
@@ -372,7 +372,6 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 		}
 		return res;
 	}
-	
 	public void balance() {
 		//sorted array of tree nodes
 		if(root != null) {
@@ -404,4 +403,5 @@ private static final int DEFAULT_SPACES_PER_LEVEL = 2;
 		return res;
 	}
 	
+
 }

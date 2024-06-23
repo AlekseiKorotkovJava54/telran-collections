@@ -1,11 +1,12 @@
 package telran.util;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
-	
 	private static final int DEFAULT_HASH_TABLE_LENGTH = 16;
 	private static final float DEFAULT_FACTOR = 0.75f;
 	List<T>[] hashTable;
